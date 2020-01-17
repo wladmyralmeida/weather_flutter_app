@@ -5,7 +5,7 @@ import 'package:my_weather_app/utils/navigator_shortcut.dart';
 class DrawerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ThemeData _themeData = Theme.of(context);
+    ThemeData _theme = Theme.of(context);
 
     return SafeArea(
       child: Container(
@@ -16,13 +16,13 @@ class DrawerScreen extends StatelessWidget {
             UserAccountsDrawerHeader(
               accountName: Text(
                 "Wlad'myr Almeida",
-                style: TextStyle(fontSize: 20.0, color: _themeData.accentColor),
+                style: TextStyle(fontSize: 20.0, color: _theme.accentColor),
               ),
               accountEmail: Text(
                 "wladmyralmeida@gmail.com",
                 style: TextStyle(
                   fontSize: 10.0,
-                  color: _themeData.accentColor,
+                  color: _theme.accentColor,
                 ),
               ),
               currentAccountPicture: CircleAvatar(
@@ -30,8 +30,8 @@ class DrawerScreen extends StatelessWidget {
                   Icons.ac_unit,
                   size: 45.0,
                 ),
-                backgroundColor: _themeData.primaryColorDark,
-                foregroundColor: _themeData.canvasColor,
+                backgroundColor: _theme.primaryColorDark,
+                foregroundColor: _theme.canvasColor,
               ),
             ),
             ListTile(
