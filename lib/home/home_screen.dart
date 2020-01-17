@@ -10,6 +10,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ThemeData _theme;
+
   void showWeather() async {
     Map data =
         await getWeather(utils.apiKey, utils.defaultCity, utils.defaultUf);
@@ -18,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData _theme = Theme.of(context);
+    _theme = Theme.of(context);
 
     return Scaffold(
         drawer: Drawer(
@@ -42,21 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Container(
-              alignment: Alignment.topLeft,
-              margin: const EdgeInsets.only(left: 16.0, top: 64.0),
-              child: Text("Current City", style: styleCurrentCity(_theme)),
-            ),
-            Container(
               alignment: Alignment.topRight,
               margin: const EdgeInsets.only(right: 16.0, top: 16.0),
               child: Image.asset("assets/images/clouds.png"),
             ),
             Container(
               alignment: Alignment.center,
-              child: Text(
-                "50.9º F",
-                style: styleClimate(_theme),
-              ),
+              child: updateTempWidget("London", "uk"),
             ),
           ],
         ));
@@ -79,5 +73,50 @@ class _HomeScreenState extends State<HomeScreen> {
         color: _theme.accentColor,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.bold);
+  }
+
+  Widget updateTempWidget(String city, String uf) {
+    return FutureBuilder(
+        future: getWeather(utils.apiKey, city, uf),
+        builder: (context, AsyncSnapshot<Map> snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              height: 40,
+              width: 40,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          Map content = snapshot.data;
+          return Container(
+            margin: EdgeInsets.only(left: 8.0, top: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                ListTile(
+                  title: Text(
+                    content['name'],
+                    style: TextStyle(
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.w500,
+                      fontStyle: FontStyle.italic,
+                      color: _theme.accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    content['main']['temp'].toString() + " °F",
+                    style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w500,
+                      fontStyle: FontStyle.italic,
+                      color: _theme.accentColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
