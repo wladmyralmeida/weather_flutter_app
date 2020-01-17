@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_weather_app/drawer/drawer_screen.dart';
-import 'package:http/http.dart' as http;
+import 'package:my_weather_app/service/weather_service.dart';
 import 'package:my_weather_app/utils/utils.dart' as utils;
-import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showWeather() async {
     Map data =
-        await getWeather(utils.apiKey, utils.defaultCity, utils.defaultUf);
+        await WeatherService.getWeathers(utils.defaultCity, utils.defaultUf);
     print(data.toString());
   }
 
@@ -56,14 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Future<Map> getWeather(String apiKey, String city, String uf) async {
-    String apiUrl =
-        "https://api.openweathermap.org/data/2.5/weather?q=$city,$uf&APPID=${utils.apiKey}";
-
-    http.Response response = await http.get(apiUrl);
-    return json.decode(response.body);
-  }
-
   TextStyle styleClimate(ThemeData _theme) => TextStyle(
       color: _theme.accentColor, fontWeight: FontWeight.bold, fontSize: 40.0);
 
@@ -77,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget updateTempWidget(String city, String uf) {
     return FutureBuilder(
-        future: getWeather(utils.apiKey, city, uf),
+        future: WeatherService.getWeathers(city, uf),
         builder: (context, AsyncSnapshot<Map> snapshot) {
           if (!snapshot.hasData) {
             return Container(
