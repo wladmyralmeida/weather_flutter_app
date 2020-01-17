@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ClimateScreen extends StatelessWidget {
+class ClimateDaysScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

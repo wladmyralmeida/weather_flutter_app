@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_weather_app/climate/climate_screen.dart';
+import 'package:my_weather_app/climate/climate_days_screen.dart';
 import 'package:my_weather_app/utils/navigator_shortcut.dart';
 
 class DrawerScreen extends StatelessWidget {
@@ -45,7 +45,7 @@ class DrawerScreen extends StatelessWidget {
             ListTile(
               onTap: () {
                 print("Climas");
-                push(context, ClimateScreen());
+                push(context, ClimateDaysScreen());
               },
               title: Text("Climas"),
               leading: Icon(Icons.whatshot),
