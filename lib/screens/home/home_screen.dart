@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_weather_app/drawer/drawer_screen.dart';
+import 'package:my_weather_app/screens/climate/climate_days_screen.dart';
+import 'package:my_weather_app/screens/drawer/drawer_screen.dart';
 import 'package:my_weather_app/service/weather_service.dart';
-import 'package:my_weather_app/utils/utils.dart' as utils;
+import 'package:my_weather_app/api/keys.dart' as api;
+import 'package:my_weather_app/utils/navigator_shortcut.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showWeather() async {
     Map data =
-        await WeatherService.getWeathers(utils.defaultCity, utils.defaultUf);
+        await WeatherService.getWeathers(api.defaultCity, api.defaultUf);
     print(data.toString());
   }
 
@@ -80,32 +82,37 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
           Map content = snapshot.data;
-          return Container(
-            margin: EdgeInsets.only(left: 8.0, top: 32.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                ListTile(
-                  title: Text(
-                    content['name'],
-                    style: TextStyle(
-                      fontSize: 35.0,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                      color: _theme.accentColor,
+          return GestureDetector(
+            onTap: (){
+              push(context, ClimateDaysScreen());
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: 8.0, top: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  ListTile(
+                    title: Text(
+                      content['name'],
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.w500,
+                        fontStyle: FontStyle.italic,
+                        color: _theme.accentColor,
+                      ),
+                    ),
+                    subtitle: Text(
+                      content['main']['temp'].toString() + " °F",
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.w500,
+                        fontStyle: FontStyle.italic,
+                        color: _theme.accentColor,
+                      ),
                     ),
                   ),
-                  subtitle: Text(
-                    content['main']['temp'].toString() + " °F",
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.w500,
-                      fontStyle: FontStyle.italic,
-                      color: _theme.accentColor,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         });

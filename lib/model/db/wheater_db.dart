@@ -1,4 +1,3 @@
-/*
 import 'dart:async';
 
 import 'package:my_weather_app/model/weather.dart';
@@ -38,24 +37,6 @@ class WeatherDB {
             ', desc TEXT, urlFoto TEXT, urlVideo TEXT, lat TEXT, lng TEXT)');
   }
 
-  Future<int> saveWeather(Weather Weather) async {
-    var dbClient = await db;
-    final sql =
-        'insert or replace into Weather (id,tipo,nome,desc,urlFoto,urlVideo,lat,lng) VALUES '
-        '(?,?,?,?,?,?,?,?)';
-    print(sql);
-    var id = await dbClient.rawInsert(sql, [
-      Weather.temp,
-      Weather.tempMin,
-      Weather.tempMax,
-      Weather.feelsLike,
-      Weather.pressure,
-      Weather.humidity,
-    ]);
-    print('id: $id');
-    return id;
-  }
-
   Future<List<Weather>> getWeathers() async {
     final dbClient = await db;
 
@@ -83,8 +64,8 @@ class WeatherDB {
     return null;
   }
 
-  Future<bool> exists(Weather Weather) async {
-    Weather c = await getWeather(Weather.id);
+  Future<bool> exists(Weather weather) async {
+    Weather c = await getWeather(weather.id);
     var exists = c != null;
     return exists;
   }
@@ -98,4 +79,4 @@ class WeatherDB {
     var dbClient = await db;
     return dbClient.close();
   }
-}*/
+}

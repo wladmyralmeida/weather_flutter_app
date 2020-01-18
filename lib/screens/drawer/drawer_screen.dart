@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_weather_app/climate/climate_days_screen.dart';
+import 'package:my_weather_app/screens/climate/climate_days_screen.dart';
 import 'package:my_weather_app/utils/navigator_shortcut.dart';
 
 class DrawerScreen extends StatelessWidget {
