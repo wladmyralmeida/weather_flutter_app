@@ -1,112 +1,89 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:my_weather_app/screens/drawer/drawer_screen.dart';
-import 'package:my_weather_app/service/weather_service.dart';
-import 'package:my_weather_app/utils/navigator_shortcut.dart';
+import 'package:my_weather_app/bloc/weather_bloc.dart';
+import 'package:my_weather_app/model/weather.dart';
+import 'package:my_weather_app/screens/weather/weathers_list_view.dart';
+import 'package:my_weather_app/utils/event_bus.dart';
+import 'package:my_weather_app/widgets/text_error_generic.dart';
 
 class WeatherScreen extends StatefulWidget {
+
+  final String name;
+
+  const WeatherScreen({Key key, @required this.name}) : super(key: key);
+
+
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
 
-class _WeatherScreenState extends State<WeatherScreen> {
-  ThemeData _theme;
+class _WeatherScreenState extends State<WeatherScreen>
+    with AutomaticKeepAliveClientMixin<WeatherScreen> {
+  List<Weather> weathers;
+
+  StreamSubscription<Event> subscription;
+
+  String get name => widget.name;
+
+  final _bloc = WeatherBloc();
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _bloc.fetch(name);
+
+    // Escutando uma stream
+    final bus = EventBus.get(context);
+    subscription = bus.stream.listen((Event e){
+      print("Event $e");
+      WeatherEvent wEvent = e;
+      if(wEvent.name == name) {
+        _bloc.fetch(name);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    _theme = Theme.of(context);
+    super.build(context);
 
-    return Scaffold(
-        drawer: Drawer(
-          child: DrawerScreen(),
-        ),
-        appBar: AppBar(
-          title: Text("Weather App"),
-          centerTitle: true,
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.refresh), onPressed: (){})
-          ],
-        ),
-        body: Stack(
-          children: <Widget>[
-            Container(
-              alignment: Alignment.topCenter,
-              child: Image.asset(
-                "assets/images/home_background.jpg",
-                height: double.infinity,
-                fit: BoxFit.fill,
-              ),
-            ),
-            Container(
-              alignment: Alignment.topRight,
-              margin: const EdgeInsets.only(right: 16.0, top: 16.0),
-              child: Image.asset("assets/images/clouds.png"),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: updateTempWidget("London", "uk"),
-            ),
-          ],
-        ));
-  }
+    return StreamBuilder(
+      stream: _bloc.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return TextError("Não foi possível buscar o clima");
+        }
 
-  TextStyle styleClimate(ThemeData _theme) => TextStyle(
-      color: _theme.accentColor, fontWeight: FontWeight.bold, fontSize: 40.0);
-
-  TextStyle styleCurrentCity(ThemeData _theme) {
-    return TextStyle(
-        fontSize: 24.0,
-        color: _theme.accentColor,
-        fontStyle: FontStyle.italic,
-        fontWeight: FontWeight.bold);
-  }
-
-  Widget updateTempWidget(String city, String uf) {
-    return Container();/*FutureBuilder(
-        future: WeatherService.getWeathers(city, uf),
-        builder: (context, AsyncSnapshot<Map> snapshot) {
-          if (!snapshot.hasData) {
-            return Container(
-              height: 40,
-              width: 40,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          Map content = snapshot.data;
-          return GestureDetector(
-            onTap: (){
-              push(context, ClimateDaysScreen());
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: 8.0, top: 32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      content['name'],
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.w500,
-                        fontStyle: FontStyle.italic,
-                        color: _theme.accentColor,
-                      ),
-                    ),
-                    subtitle: Text(
-                      content['main']['temp'].toString() + " °F",
-                      style: TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.w500,
-                        fontStyle: FontStyle.italic,
-                        color: _theme.accentColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
           );
-        });*/
+        }
+
+        List<Weather> weathers = snapshot.data;
+
+        return RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: WeathersListView(weathers),
+        );
+      },
+    );
+  }
+
+  Future<void> _onRefresh() {
+    return _bloc.fetch(name);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _bloc.dispose();
+    subscription.cancel();
   }
 }

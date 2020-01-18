@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:my_weather_app/db/entity.dart';
+import 'package:my_weather_app/utils/event_bus.dart';
 import 'package:my_weather_app/utils/temperatures.dart';
 import 'package:my_weather_app/utils/icons.dart';
 import 'dart:convert' as convert;
+
+class WeatherEvent extends Event {
+  // salvar, deletar
+  String action;
+
+  /*
+  * Silverstone, UK 
+  * São Paulo, Brazil
+  * Melbourne, Australia
+  *  Monte Carlo, Monaco
+  * */
+  String name;
+
+  WeatherEvent(this.action, this.name);
+
+  @override
+  String toString() {
+    return 'WeatherEvent{action: $action, name: $name}';
+  }
+}
 
 class Weather extends Entity {
   int id;
@@ -106,12 +127,12 @@ class Weather extends Entity {
     }
     return weathers;
   }
-  
+
   String toJson() {
     String json = convert.json.encode(toMap());
     return json;
   }
-  
+
   IconData getIconData() {
     switch (this.iconCode) {
       case '01d':

@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
-import 'package:my_weather_app/api/api_response.dart';
 import 'package:my_weather_app/api/http_exception.dart';
 import 'package:my_weather_app/api/keys.dart' as api;
 import 'package:my_weather_app/model/weather.dart';
-import 'package:my_weather_app/utils/network.dart';
 
 class WeatherService {
   WeatherService(String city, String uf);
 
-  static const baseUrl = 'http://api.openweathermap.org';
+  static const baseUrl = 'https://api.openweathermap.org';
 
   static Future<List<Weather>> getWeathers(String cityName) async {
     var url =
-        '$baseUrl/data/2.5/weather?q=$cityName&appid=${api.apiKey}';
+        '$baseUrl/data/2.5/weather?q=$cityName,uk&APPID=${api.apiKey}';
     print("GET > $url");
     var response = await http.get(url);
     if (response.statusCode != 200) {

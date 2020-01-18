@@ -5,6 +5,11 @@ import 'package:my_weather_app/service/weather_service.dart';
 import 'package:my_weather_app/widgets/forecast_horizontal_widget.dart';
 
 class ForecastScreen extends StatefulWidget {
+
+  final List<Weather> weathers;
+
+  const ForecastScreen({Key key, this.weathers}) : super(key: key);
+
   @override
   _ForecastScreenState createState() => _ForecastScreenState();
 }
