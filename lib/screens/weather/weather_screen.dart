@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:my_weather_app/screens/climate/climate_days_screen.dart';
 import 'package:my_weather_app/screens/drawer/drawer_screen.dart';
 import 'package:my_weather_app/service/weather_service.dart';
-import 'package:my_weather_app/api/keys.dart' as api;
 import 'package:my_weather_app/utils/navigator_shortcut.dart';
 
-class HomeScreen extends StatefulWidget {
+class WeatherScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _WeatherScreenState createState() => _WeatherScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _WeatherScreenState extends State<WeatherScreen> {
   ThemeData _theme;
-
-  void showWeather() async {
-    Map data =
-        await WeatherService.getWeathers(api.defaultCity, api.defaultUf);
-    print(data.toString());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text("Weather App"),
           centerTitle: true,
           actions: <Widget>[
-            IconButton(icon: Icon(Icons.refresh), onPressed: showWeather)
+            IconButton(icon: Icon(Icons.refresh), onPressed: (){})
           ],
         ),
         body: Stack(
@@ -69,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget updateTempWidget(String city, String uf) {
-    return FutureBuilder(
+    return Container();/*FutureBuilder(
         future: WeatherService.getWeathers(city, uf),
         builder: (context, AsyncSnapshot<Map> snapshot) {
           if (!snapshot.hasData) {
@@ -115,6 +107,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           );
-        });
+        });*/
   }
 }

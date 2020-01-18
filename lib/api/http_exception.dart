@@ -1,3 +1,4 @@
+
 class HTTPException implements Exception {
   final int code;
   final String message;

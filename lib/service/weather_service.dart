@@ -1,47 +1,44 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:connectivity/connectivity.dart';
+import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
+import 'package:my_weather_app/api/api_response.dart';
 import 'package:my_weather_app/api/http_exception.dart';
 import 'package:my_weather_app/api/keys.dart' as api;
 import 'package:my_weather_app/model/weather.dart';
+import 'package:my_weather_app/utils/network.dart';
 
 class WeatherService {
   WeatherService(String city, String uf);
 
   static const baseUrl = 'http://api.openweathermap.org';
 
-  static Future<Map> getWeathers(String city, String uf) async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    print(connectivityResult);
-    if (connectivityResult == ConnectivityResult.none) {
-      throw SocketException("Internet indisponível.");
+  static Future<List<Weather>> getWeathers(String cityName) async {
+    var url =
+        '$baseUrl/data/2.5/weather?q=$cityName&appid=${api.apiKey}';
+    print("GET > $url");
+    var response = await http.get(url);
+    if (response.statusCode != 200) {
+      throw HTTPException(response.statusCode, "Não foi possível recuperar os dados sobre o clima");
     }
-    final url =
-        "https://api.openweathermap.org/data/2.5/weather?q=$city,$uf&APPID=${api.apiKey}";
-    print("> get: $url");
+    String json = response.body;
+    List list = convert.json.decode(json);
 
-    final response = await http.get(url);
+    List<Weather> weathers = list.map<Weather>((map) => Weather.fromMap(map)).toList();
 
-    return json.decode(response.body);
+    return weathers;
   }
 
-  static Future<Map> getFiveDaysWeathers(int id) async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    print(connectivityResult);
-    if (connectivityResult == ConnectivityResult.none) {
-      throw SocketException("Internet indisponível.");
+  Future<List<Weather>> getForecast(String cityName) async {
+    final url = '$baseUrl/data/2.5/forecast?q=$cityName&appid=${api.apiKey}';
+    print('fetching $url');
+    final res = await http.get(url);
+    if (res.statusCode != 200) {
+      throw HTTPException(res.statusCode, "Não foi possível recuperar os dados sobre o clima");
     }
-    final url =
-        "https://samples.openweathermap.org/data/2.5/forecast?id=$id&appid=${api.apiKey}";
-    print("> get: $url");
-
-    final response = await http.get(url);
-
-    return json.decode(response.body);
+    final forecastJson = convert.json.decode(res.body);
+    List<Weather> weathers = Weather.fromForecastJson(forecastJson);
+    return weathers;
   }
-
 
   Future<String> getCityNameFromLocation(
       {double latitude, double longitude}) async {
@@ -50,32 +47,20 @@ class WeatherService {
     print('fetching $url');
     final res = await http.get(url);
     if (res.statusCode != 200) {
-      throw HTTPException(res.statusCode, "unable to fetch weather data");
+      throw HTTPException(res.statusCode, "Não foi possível recuperar os dados sobre o clima");
     }
-    final weatherJson = json.decode(res.body);
+    final weatherJson = convert.json.decode(res.body);
     return weatherJson['name'];
   }
 
-  Future<Weather2> getWeatherData(String cityName) async {
+  Future<Weather> getWeatherData(String cityName) async {
     final url = '$baseUrl/data/2.5/weather?q=$cityName&appid=${api.apiKey}';
     print('fetching $url');
     final res = await http.get(url);
     if (res.statusCode != 200) {
-      throw HTTPException(res.statusCode, "unable to fetch weather data");
+      throw HTTPException(res.statusCode, "Não foi possível recuperar os dados sobre o clima");
     }
-    final weatherJson = json.decode(res.body);
-    return Weather2.fromJson(weatherJson);
-  }
-
-  Future<List<Weather2>> getForecast(String cityName) async {
-    final url = '$baseUrl/data/2.5/forecast?q=$cityName&appid=${api.apiKey}';
-    print('fetching $url');
-    final res = await http.get(url);
-    if (res.statusCode != 200) {
-      throw HTTPException(res.statusCode, "unable to fetch weather data");
-    }
-    final forecastJson = json.decode(res.body);
-    List<Weather2> weathers = Weather2.fromForecastJson(forecastJson);
-    return weathers;
+    final weatherJson = convert.json.decode(res.body);
+    return Weather.fromJson(weatherJson);
   }
 }
