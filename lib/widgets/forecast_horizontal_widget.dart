@@ -34,9 +34,9 @@ class ForecastHorizontal extends StatelessWidget {
             child: Center(
                 child: ValueTile(
               DateFormat('E, ha').format(
-                  DateTime.fromMillisecondsSinceEpoch(item.time * 1000)),
-              '${item.temperature}°',
-              iconData: item.getIconData(),
+                  DateTime.fromMillisecondsSinceEpoch(item.timezone * 1000)),
+              '${item.name}°',
+              iconData: item.weather.contains("icon") ?? "",
             )),
           );
         },

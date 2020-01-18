@@ -3,6 +3,7 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:my_weather_app/api/http_exception.dart';
 import 'package:my_weather_app/api/keys.dart' as api;
+import 'package:my_weather_app/model/forecast.dart';
 import 'package:my_weather_app/model/weather.dart';
 
 class WeatherService {
@@ -26,7 +27,7 @@ class WeatherService {
     return weathers;
   }
 
-  Future<List<Weather>> getForecast(String cityName) async {
+  Future<List<Forecast>> getForecast(String cityName) async {
     final url = '$baseUrl/data/2.5/forecast?q=$cityName&appid=${api.apiKey}';
     print('fetching $url');
     final res = await http.get(url);
@@ -34,7 +35,7 @@ class WeatherService {
       throw HTTPException(res.statusCode, "Não foi possível recuperar os dados sobre o clima");
     }
     final forecastJson = convert.json.decode(res.body);
-    List<Weather> weathers = Weather.fromForecastJson(forecastJson);
+    List<Forecast> weathers = Forecast.fromForecastJson(forecastJson);
     return weathers;
   }
 

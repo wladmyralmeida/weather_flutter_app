@@ -24,20 +24,14 @@ class WeathersListView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Center(
-                    child: Container(
-                      width: 50.0,
-                      child: Icon(w.getIconData() ?? Icons.ac_unit),
-                    ),
-                  ),
                   Text(
-                    w.cityName,
+                    w.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 25),
                   ),
                   Text(
-                    w.description,
+                    w.cod.toString(),
                     style: TextStyle(fontSize: 16),
                   ),
                   ButtonBarTheme(
